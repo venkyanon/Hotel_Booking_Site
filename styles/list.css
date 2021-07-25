@@ -1,0 +1,52 @@
+.hotel-img{
+  height: 200px;
+  width: 250px;
+}
+#list{
+  scroll-behavior: smooth;
+
+}
+#container{
+  display: grid;
+}
+.nav-item{
+  color: black;
+
+}
+#map{
+
+  scroll-behavior: smooth;
+}
+.hotels{
+  margin-top: 2%;
+  background-color: lightgray;
+  width: 40%;
+  float: left;
+  display: flex;
+  margin-left: 2%;
+  margin-right: 2%;
+  display: flex;
+}
+.body{
+  display: flex;
+  flex-direction: column;
+}
+.hotels:hover{
+  background-color: rosybrown;
+}
+.checked {
+  color: orange;
+}
+
+@media only screen and (min-width: 768px){
+  #content{
+    padding-left: 16% !important;
+
+  }
+}
+
+@media only screen and (min-width: 992px){
+  #content{
+    padding-left: 8% !important;
+  }
+} 
