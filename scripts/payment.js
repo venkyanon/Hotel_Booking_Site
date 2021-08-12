@@ -1,43 +1,50 @@
-function store() {
-    var Username = document.getElementById("name").value;
-    var password = document.getElementById("password").value;
-    localStorage.setItem(Username, password);
-  }
+let urlParams = new URLSearchParams(window.location.search);
+const API_URL = "https://tripadvisor1.p.rapidapi.com/";
+const tripAdvisorHost = "tripadvisor1.p.rapidapi.com";
+const tripAdvisorKey = "<YOUR_API_KEY>";
 
-  function loginM() {
-    store();
-    var Username = document.getElementById("name").value;
-    var password = document.getElementById("password").value;
-    if (Username == "admin" && password == "admin") {
-      window.alert("Login Successful");
-      console.log(document.getElementById("logout-button").innerHTML);
-      document.getElementById("logout-button").innerHTML = "LOGOUT";
-      document.getElementById("logout-button").setAttribute("data-toggle", "none");
-      document.getElementById("ena").removeAttribute("disabled");
+/* Fetch the API data for hotel details, and price calculation, and finally create all the text dynamically */
+let fetchAPI = () => {
+    let xhr = new XMLHttpRequest();
 
-    }
-  }
-  function logout() {
-    var data = document.getElementById("logout-button");
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === this.DONE) {
+            let result = JSON.parse(this.responseText).data[0];
 
-    if (data.innerHTML == "LOGOUT" || data.innerHTML == "LOGIN") {
-      data.innerHTML = "LOGIN";
-      data.setAttribute("data-toggle", "modal");
-      document.getElementById("close").setAttribute("data-dismiss","modal");
-      document.getElementById("ena").setAttribute("disabled",true);
-      localStorage.clear();
-    }
-  }
+            let toDate = new Date(urlParams.get('toDate'));
+            let fromDate = new Date(urlParams.get('fromDate'));
+            let days = (toDate - fromDate)/(24*60*60*1000);
 
-  function pay(){
-    var data = document.getElementById("logout-button");
+            document.getElementById("hotel-image").src = result.photo.images.medium.url;
+            document.getElementById("hotel-name").innerText = result.name;
+            document.getElementById("ranking").innerHTML = "<b>" + result.ranking + "</b>";
+            document.getElementById("address").innerText = result.address;
+            document.getElementById("name").innerHTML = "<strong class='heading'>Name:</strong>&nbsp;" + urlParams.get('name');
+            document.getElementById("adult").innerHTML = "<strong class='heading'>Number of Adults:</strong>&nbsp;" + urlParams.get('adult');
+            document.getElementById("from-date").innerHTML = "<strong class='heading'>Check-in Date:</strong>&nbsp;" + urlParams.get('fromDate');
+            document.getElementById("to-date").innerHTML =  "<strong class='heading'>Check-out Date:</strong>&nbsp;" + urlParams.get('toDate');
+            document.getElementById("tariff").innerHTML = "<strong class='heading'>Tariff Breakdown:</strong>&nbsp;Rs.1000 x " + urlParams.get('adult') + " Adults x " + days + " Nights";
+            document.getElementById("amount").innerHTML = "<strong class='heading'>Total Amount:</strong>&nbsp;" + urlParams.get('price');
+            disableLoader();
+        }
+    });
 
-    if (data.innerHTML == "LOGOUT"){
+    xhr.open("GET", API_URL + "hotels/get-details?lang=en_US&location_id=" + urlParams.get('id'));
+    xhr.setRequestHeader("x-rapidapi-host", tripAdvisorHost);
+    xhr.setRequestHeader("x-rapidapi-key", tripAdvisorKey);
 
-        document.getElementById("ena").removeAttribute("disabled");
-        alert("Hi your booking is sucessful");
-    }else{
+    xhr.send();
+}
 
-        document.getElementById("ena").setAttribute("disabled",true);
-    }
-  } 
+fetchAPI();
+
+if (!isLogin || isLogin === 'false') {
+    document.getElementById('pay-now-button').disabled = true;
+} else if (isLogin === 'true') {
+document.getElementById('pay-now-button').disabled = false;
+}
+
+let payNow = e => {
+	e.preventDefault();
+	alert('Hi your booking is successfull!');
+};
